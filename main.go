@@ -1,6 +1,7 @@
 package main
 
 import (
+	"SensorReceiveUploadGtk/io"
 	"SensorReceiveUploadGtk/models"
 	"SensorReceiveUploadGtk/ui"
 	"embed"
@@ -27,14 +28,19 @@ func main() {
 	window.ShowAll()
 	ui.SetStyle(assets, window)
 
-	state := models.NewState(gladeBuilder)
+	// Channel to track sensor changes.
+	c := make(chan models.Sensors)
+	state := models.NewState(gladeBuilder, c)
 	state.Update()
+
+	go io.ReceiveFromFakeSensors(c)
 
 	// GTK event timer that runs every second.
 	_ = glib.TimeoutSecondsAdd(1, state.Update)
 
 	// Run
 	gtk.Main()
+	defer close(c)
 }
 
 // destroy is the triggered handler when closing/destroying the gui window

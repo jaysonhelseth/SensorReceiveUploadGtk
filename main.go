@@ -27,15 +27,10 @@ func main() {
 	window.ShowAll()
 	ui.SetStyle(assets, window)
 
-	// Set Actions
-	// Todo: Set Signals
-
-	//helpers.SetSignals(gladeBuilder)
 	state := models.NewState(gladeBuilder)
 	state.Update()
 
-	//Start
-	//_ = glib.TimeoutAdd(1000, state.Update)
+	// GTK event timer that runs every second.
 	_ = glib.TimeoutSecondsAdd(1, state.Update)
 
 	// Run
